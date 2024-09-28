@@ -9,7 +9,11 @@ export class Answer {
   @Prop()
   text: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Question' })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Question',
+    required: true,
+  })
   question: Question;
 
   @Prop({ type: Date, default: Date.now })

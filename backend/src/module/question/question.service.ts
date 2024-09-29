@@ -21,6 +21,19 @@ export class QuestionService {
     return createdQuestion;
   }
 
+  async createMany(questions: CreateQuestionDto[]): Promise<Question[]> {
+    return this.questionModel.insertMany(questions);
+  }
+
+  async count(): Promise<number> {
+    try {
+      return this.questionModel.countDocuments().exec();
+    } catch (error) {
+      console.error('Error in QuestionService.count:', error);
+      throw error;
+    }
+  }
+
   findAll() {
     return this.questionModel.find().exec();
   }
@@ -29,11 +42,16 @@ export class QuestionService {
     return `This action returns a #${id} question`;
   }
 
-  update(id: number, updateQuestionDto: UpdateQuestionDto) {
-    return `This action updates a #${id} question`;
+  async update(id: number, updateQuestionDto: UpdateQuestionDto) {
+    const updatedQuestion = await this.questionModel.findByIdAndUpdate(
+      id,
+      updateQuestionDto,
+      { new: true },
+    );
+    return updatedQuestion;
   }
 
   remove(id: number) {
-    return `This action removes a #${id} question`;
+    return this.questionModel.findByIdAndDelete(id).exec();
   }
 }

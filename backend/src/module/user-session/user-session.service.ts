@@ -9,17 +9,17 @@ import { Model } from 'mongoose';
 export class UserSessionService {
   constructor(
     @InjectModel(UserSession.name)
-    private readonly questionModel: Model<UserSession>,
+    private readonly userSessionModel: Model<UserSession>,
   ) {}
 
   async startSession(createUserSessionDto: CreateUserSessionDto) {
     const createdUserSession =
-      await this.questionModel.create(createUserSessionDto);
+      await this.userSessionModel.create(createUserSessionDto);
     return createdUserSession;
   }
 
   async endSession(id: number) {
-    const updatedUserSession = await this.questionModel.findByIdAndUpdate(
+    const updatedUserSession = await this.userSessionModel.findByIdAndUpdate(
       id,
       { sessionEnd: new Date() },
       { new: true },
@@ -28,15 +28,15 @@ export class UserSessionService {
   }
 
   findAll() {
-    return `This action returns all userSession`;
+    return this.userSessionModel.find().exec();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} userSession`;
+    return this.userSessionModel.findById(id).exec();
   }
 
   update(id: number, updateUserSessionDto: UpdateUserSessionDto) {
-    const updatedUserSession = this.questionModel.findByIdAndUpdate(
+    const updatedUserSession = this.userSessionModel.findByIdAndUpdate(
       id,
       updateUserSessionDto,
       { new: true },
@@ -45,6 +45,6 @@ export class UserSessionService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} userSession`;
+    return this.userSessionModel.findByIdAndDelete(id).exec();
   }
 }

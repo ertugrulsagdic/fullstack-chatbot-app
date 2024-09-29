@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import '../styles/BoltChatBot.css';
 import { RobotIcon } from '../assets/icons/RobotIcon';
 import { CloseIcon } from '../assets/icons/CloseIcon';
+import { useWebSocket } from '../utils/WebSocketContext';
 
 const BoltChatBot = () => {
     const [isOpen, setIsOpen] = useState(true);
@@ -11,7 +12,9 @@ const BoltChatBot = () => {
     const [isTyping, setIsTyping] = useState(false);
     const chatContainerRef = useRef(null);
     const triggerButtonRef = useRef(null);
-  
+
+    const { updateName } = useWebSocket();
+    
     useEffect(() => {
       if (chatContainerRef.current) {
         chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -81,9 +84,20 @@ const BoltChatBot = () => {
   
         if (!userName) {
           setUserName(inputText.toLocaleUpperCase());
-          setTimeout(() => {
-            addBotMessage(`Nice to meet you, ${inputText.toLocaleLowerCase()}! I will ask you a few questions to get to know you better. Please answer each question to the best of your ability.`);
-          }, 500);
+          updateName(inputText);
+          updateName(
+            inputText, 
+            (successData) => {
+              setTimeout(() => {
+                addBotMessage(`Nice to meet you, ${successData.toLocaleLowerCase()}! I will ask you a few questions to get to know you better. Please answer each question to the best of your ability.`);
+              }, 500);
+            }, 
+            (errorData) => {
+              setTimeout(() => {
+                addBotMessage(`Oops! There was an error: ${errorData}`);
+              }, 500);
+            }
+          ); 
         }
       }
     };

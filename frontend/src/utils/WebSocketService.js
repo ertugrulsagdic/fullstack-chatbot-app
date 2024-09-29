@@ -4,18 +4,24 @@ export const establishWebSocketConnection = () => {
   const wsBaseUrl = process.env.REACT_APP_WS_URL || 'http://localhost:8000';
   let sessionId = localStorage.getItem('sessionId');
 
-  const options = sessionId ? { query: { id: sessionId } } : {};
+  let wsUrl = wsBaseUrl;
 
-  const socket = io(wsBaseUrl, options);
+  if (sessionId) {
+    wsUrl = `${wsBaseUrl}?id=${sessionId}`;
+  }
+
+  const socket = io(wsUrl);
 
   socket.on('connect', () => {
+    console.log(wsUrl);
     console.log('Connection established');
   });
 
   socket.on('session', (data) => {
-
-    if (!sessionId && data.sessionId) {
-      localStorage.setItem('sessionId', data.sessionId);
+    console.log('SessionId received:', data);
+    if (data) {
+      localStorage.setItem('sessionId', data);
+      console.log('SessionId saved to localStorage:', data);
     }
   });
 

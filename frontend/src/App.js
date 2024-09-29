@@ -1,13 +1,10 @@
 import './App.css';
-import BoltChatBot from './components/chatbot/BoltChatBot';
+import BoltChatBot from './components/BoltChatBot';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-    
+    <div >
         <BoltChatBot />
-      </header>
     </div>
   );
 }

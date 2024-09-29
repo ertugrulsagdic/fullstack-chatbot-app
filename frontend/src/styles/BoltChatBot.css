@@ -66,6 +66,9 @@
     border-radius: 50%;
     background: radial-gradient(circle, #251D51, #1F1745);
     box-shadow: 0 0 20px #251D51;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .orb.welcome {
@@ -118,6 +121,7 @@
     background-color: #d3cfe8;
     color: #333;
     align-self: flex-end;
+    align-items: flex-end;
     margin-left: auto;
   }
   
@@ -125,6 +129,7 @@
     background-color: white;
     color: #333;
     align-self: flex-start;
+    align-items: flex-start;
     border: 1px solid #d3cfe8;
   }
   

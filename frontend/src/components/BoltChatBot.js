@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './BoltChatBot.css';
+import '../styles/BoltChatBot.css';
+import { RobotIcon } from '../assets/icons/RobotIcon';
+import { CloseIcon } from '../assets/icons/CloseIcon';
 
 const BoltChatBot = () => {
     const [isOpen, setIsOpen] = useState(true);
@@ -78,9 +80,9 @@ const BoltChatBot = () => {
         setInputText('');
   
         if (!userName) {
-          setUserName(inputText);
+          setUserName(inputText.toLocaleUpperCase());
           setTimeout(() => {
-            addBotMessage(`Nice to meet you, ${inputText}! I will ask you a few questions to get to know you better. Please answer each question to the best of your ability.`);
+            addBotMessage(`Nice to meet you, ${inputText.toLocaleLowerCase()}! I will ask you a few questions to get to know you better. Please answer each question to the best of your ability.`);
           }, 500);
         }
       }
@@ -88,50 +90,56 @@ const BoltChatBot = () => {
   
     return (
       <div className={`chatbot-container ${isOpen ? 'open' : 'closed'}`}>
-        {isOpen ? (
-          <div className="chatbot-window">
-            <div className="chatbot-header">
-              <h2>Bolt Chat</h2>
-              <button onClick={handleClose} className="close-button">
-                X
-              </button>
-            </div>
-            <div className="chatbot-messages" ref={chatContainerRef}>
-              
-              <div className="welcome-container">
-                <div className="initial-orb">
-                  <div className="orb"></div>
-                </div>
-                <p className="welcome-message">Welcome to Bolt Chat!</p>
-              </div>
-              {messages.map((message, index) => (
-                <div key={index} className={`message ${message.isUser ? 'user' : 'bot'}`}>
-                  {message.text} 
-                  {isTyping && index === messages.length - 1 && !message.isUser && (
-                    <div className="orb small"></div>
-                    )}
-                </div>
-              ))}
-            </div>
-            <div className="chatbot-input-area">
-              <form onSubmit={handleSubmit} className="chatbot-input">
-                <input
-                  type="text"
-                  value={inputText}
-                  onChange={handleInputChange}
-                  placeholder="Type anything..."
-                  disabled={isTyping}
-                />
-                <button type="submit" disabled={isTyping}>Send</button>
-              </form>
+      {isOpen ? (
+        <div className="chatbot-window">
+        <div className="chatbot-header">
+          <h2>Bolt Chat</h2>
+          
+          <button onClick={handleClose} className="close-button">
+           <CloseIcon />
+          </button>
+        </div>
+        <div className="chatbot-messages" ref={chatContainerRef}>
+          
+          <div className="welcome-container">
+          <div className="initial-orb">
+            <div className="orb">
+            <RobotIcon color='white' style={{ width: '70%', height: '70%' }} />
             </div>
           </div>
-        ) : (
-          <button onClick={handleOpen} className="chatbot-trigger initial-orb" ref={triggerButtonRef}>
-            
-            <div className="orb"></div>
-          </button>
-        )}
+
+          
+          <p className="welcome-message">Welcome to Bolt Chat!</p>
+          </div>
+          {messages.map((message, index) => (
+          <div key={index} className={`message ${message.isUser ? 'user' : 'bot'}`}>
+            {message.text} 
+            {isTyping && index === messages.length - 1 && !message.isUser && (
+            <div className="orb small"></div>
+            )}
+          </div>
+          ))}
+        </div>
+        <div className="chatbot-input-area">
+          <form onSubmit={handleSubmit} className="chatbot-input">
+          <input
+            type="text"
+            value={inputText}
+            onChange={handleInputChange}
+            placeholder="Type anything..."
+            disabled={isTyping}
+          />
+          <button type="submit" disabled={isTyping}>Send</button>
+          </form>
+        </div>
+        </div>
+      ) : (
+        <button onClick={handleOpen} className="chatbot-trigger initial-orb" ref={triggerButtonRef}>
+        <div className="orb">
+          <RobotIcon color='white' style={{ width: '70%', height: '70%' }} />
+        </div>
+        </button>
+      )}
       </div>
     );
   };

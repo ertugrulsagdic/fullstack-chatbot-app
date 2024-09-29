@@ -29,6 +29,18 @@ export class UserSessionService {
     return updatedUserSession;
   }
 
+  async updateClientId(
+    id: mongoose.Types.ObjectId,
+    clientId: string,
+  ): Promise<UserSession> {
+    const updatedUserSession = await this.userSessionModel.findByIdAndUpdate(
+      id,
+      { clientId },
+      { new: true },
+    );
+    return updatedUserSession;
+  }
+
   async continueSession(id: mongoose.Types.ObjectId): Promise<UserSession> {
     const updatedUserSession = await this.userSessionModel.findByIdAndUpdate(
       id,
@@ -53,11 +65,11 @@ export class UserSessionService {
     return await this.userSessionModel.findById(id).exec();
   }
 
-  update(
+  async update(
     id: mongoose.Types.ObjectId,
     updateUserSessionDto: UpdateUserSessionDto,
   ) {
-    const updatedUserSession = this.userSessionModel.findByIdAndUpdate(
+    const updatedUserSession = await this.userSessionModel.findByIdAndUpdate(
       id,
       updateUserSessionDto,
       { new: true },

@@ -11,6 +11,7 @@ import { Server } from 'socket.io';
 import { AnswerService } from 'src/module/answer/answer.service';
 import { QuestionService } from 'src/module/question/question.service';
 import { CreateUserSessionDto } from 'src/module/user-session/dto/create-user-session.dto';
+import { UpdateUserSessionDto } from 'src/module/user-session/dto/update-user-session.dto';
 import { UserSessionService } from 'src/module/user-session/user-session.service';
 
 @WebSocketGateway({
@@ -29,11 +30,13 @@ export class BotGateway
     private readonly userSessionService: UserSessionService,
   ) {}
 
-  afterInit() {
-    console.log('Initialized');
-  }
+  afterInit() {}
 
   async handleConnection(client: any) {
+    console.log(
+      `Number of connected clients: ${this.server.engine.clientsCount}`,
+    );
+
     const { id } = client.handshake.query;
 
     let session = await this.userSessionService.findOne(id);
@@ -77,13 +80,28 @@ export class BotGateway
     }
   }
 
-  @SubscribeMessage('message')
-  handleMessage(client: any, data: any) {
-    console.log(`Message received from client id: ${client.id}`);
-    console.debug(`Payload: ${data}`);
-    return {
-      event: 'reply',
-      data: 'Wrong data that will make the test fail',
-    };
+  @SubscribeMessage('updateName')
+  async handleUpdateName(client: any, data: any) {
+    const { sessionId, name } = data;
+
+    let session = await this.userSessionService.findOne(sessionId);
+
+    if (session) {
+      const updateSessionDto: UpdateUserSessionDto = {
+        name,
+      };
+
+      session = await this.userSessionService.update(
+        sessionId,
+        updateSessionDto,
+      );
+
+      client.emit('nameUpdated', { success: true, data: name });
+    } else {
+      return {
+        success: false,
+        data: 'Session not found',
+      };
+    }
   }
 }

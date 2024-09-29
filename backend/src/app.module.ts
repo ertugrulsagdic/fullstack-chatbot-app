@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserSessionModule } from './module/user-session/user-session.module';
 import 'dotenv/config';
 import { SeedModule } from './seed/seed.module';
+import { BotModule } from './bot/bot.module';
 
 @Module({
   imports: [
@@ -15,12 +16,9 @@ import { SeedModule } from './seed/seed.module';
     AnswerModule,
     UserSessionModule,
     SeedModule,
+    BotModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  constructor() {
-    console.log('Mongoose connected to MongoDB');
-  }
-}
+export class AppModule {}

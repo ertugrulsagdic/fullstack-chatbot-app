@@ -12,5 +12,6 @@ import { UserSession, UserSessionSchema } from './schemas/user-session.schema';
   ],
   // controllers: [UserSessionController],
   providers: [UserSessionService],
+  exports: [UserSessionService],
 })
 export class UserSessionModule {}

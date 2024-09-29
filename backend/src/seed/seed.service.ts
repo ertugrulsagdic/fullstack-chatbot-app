@@ -4,9 +4,7 @@ import { questions } from './data';
 
 @Injectable()
 export class SeedService {
-  constructor(private readonly questionService: QuestionService) {
-    console.log('SeedService instantiated');
-  }
+  constructor(private readonly questionService: QuestionService) {}
 
   async seedQuestions(): Promise<void> {
     console.log('Checking if questions exist in the database...');

@@ -1,3 +1,3 @@
 export class CreateUserSessionDto {
-  readonly name: string;
+  readonly clientId: string;
 }

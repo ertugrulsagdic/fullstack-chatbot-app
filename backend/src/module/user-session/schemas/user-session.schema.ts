@@ -7,8 +7,13 @@ export type UserSessionDocument = HydratedDocument<UserSession>;
 
 @Schema()
 export class UserSession {
-  @Prop({ required: true })
+  _id: mongoose.Types.ObjectId;
+
+  @Prop()
   name: string;
+
+  @Prop()
+  clientId: string;
 
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }])
   questions: Question[];

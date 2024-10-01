@@ -4,12 +4,14 @@ import { UpdateUserSessionDto } from './dto/update-user-session.dto';
 import { UserSession } from './schemas/user-session.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import { QuestionService } from '../question/question.service';
 
 @Injectable()
 export class UserSessionService {
   constructor(
     @InjectModel(UserSession.name)
     private readonly userSessionModel: Model<UserSession>,
+    private readonly questionService: QuestionService,
   ) {}
 
   async startSession(
@@ -57,12 +59,93 @@ export class UserSessionService {
     return userSession;
   }
 
+  async findUserSessionDetails(
+    id: mongoose.Types.ObjectId,
+  ): Promise<UserSession> {
+    const result = await this.userSessionModel
+      .aggregate([
+        {
+          $match: { _id: id },
+        },
+        {
+          $lookup: {
+            from: 'questions',
+            let: { questions: '$questions' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $in: ['$_id', '$$questions'],
+                  },
+                },
+              },
+              {
+                $lookup: {
+                  from: 'answers',
+                  let: { questionId: '$_id', sessionId: id },
+                  pipeline: [
+                    {
+                      $match: {
+                        $expr: {
+                          $and: [
+                            { $eq: ['$question', '$$questionId'] },
+                            { $eq: ['$session', '$$sessionId'] },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                  as: 'answer',
+                },
+              },
+              {
+                $addFields: {
+                  answer: { $arrayElemAt: ['$answer', 0] },
+                },
+              },
+            ],
+            as: 'questions',
+          },
+        },
+        // for each questionData, get the answerData using the questionData._id and session id using _id field
+
+        // {
+        //   $limit: 1,
+        // },
+      ])
+      .exec();
+    console.log(result);
+    return result.length > 0 ? result[0] : null;
+  }
+
   findAll() {
     return this.userSessionModel.find().exec();
   }
 
   async findOne(id: mongoose.Types.ObjectId): Promise<UserSession> {
     return await this.userSessionModel.findById(id).exec();
+  }
+
+  async addQuestion(
+    id: mongoose.Types.ObjectId,
+    questionId: mongoose.Types.ObjectId,
+  ) {
+    const userSession = await this.userSessionModel.findById(id).exec();
+    if (!userSession) {
+      throw new Error('User session not found');
+    }
+    const updatedUserSession = await this.userSessionModel.findByIdAndUpdate(
+      id,
+      {
+        $push: { questions: questionId },
+        $set: { updatedAt: new Date() },
+        $inc: {
+          currentQuestionIndex: 1,
+        },
+      },
+      { new: true },
+    );
+    return updatedUserSession;
   }
 
   async update(

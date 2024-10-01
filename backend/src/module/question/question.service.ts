@@ -34,6 +34,12 @@ export class QuestionService {
     }
   }
 
+  async findQuestionsByIndex(index: number): Promise<Question> {
+    return await this.questionModel
+      .findOne({ index, isDynamicallyGenerated: false })
+      .exec();
+  }
+
   findAll() {
     return this.questionModel.find().exec();
   }

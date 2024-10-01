@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAnswerDto } from './dto/create-answer.dto';
 import { UpdateAnswerDto } from './dto/update-answer.dto';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Answer } from './schemas/answer.schema';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -18,6 +18,10 @@ export class AnswerService {
       createdAt: new Date(),
     });
     return createdAnswer;
+  }
+
+  async findAllByAnswerIds(answerIds: Answer[]) {
+    return this.answerModel.find({ _id: { $in: answerIds } }).exec();
   }
 
   findAll() {

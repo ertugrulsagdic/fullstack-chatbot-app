@@ -1,6 +1,6 @@
 import './App.css';
 import BoltChatBot from './components/BoltChatBot';
-import { WebSocketProvider } from './utils/WebSocketContext';
+import { WebSocketProvider } from './provider/WebSocketContext';
 
 function App() {
 

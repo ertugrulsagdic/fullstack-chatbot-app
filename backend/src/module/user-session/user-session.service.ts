@@ -70,12 +70,31 @@ export class UserSessionService {
         {
           $lookup: {
             from: 'questions',
-            let: { questions: '$questions' },
+            let: { questions: '$questions', name: '$name' },
             pipeline: [
               {
                 $match: {
                   $expr: {
                     $in: ['$_id', '$$questions'],
+                  },
+                },
+              },
+              {
+                $addFields: {
+                  text: {
+                    $cond: {
+                      if: {
+                        $eq: ['$index', 1],
+                      },
+                      then: {
+                        $replaceAll: {
+                          input: '$text',
+                          find: '{name}',
+                          replacement: '$$name',
+                        },
+                      },
+                      else: '$text',
+                    },
                   },
                 },
               },
@@ -107,11 +126,6 @@ export class UserSessionService {
             as: 'questions',
           },
         },
-        // for each questionData, get the answerData using the questionData._id and session id using _id field
-
-        // {
-        //   $limit: 1,
-        // },
       ])
       .exec();
     console.log(result);

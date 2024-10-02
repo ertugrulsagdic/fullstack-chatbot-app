@@ -65,26 +65,13 @@ export class BotGateway
       data: session,
     });
 
-    // const count = await this.questionService.count();
-
     await this.handleNextQuestion(client, session);
-    // if (session.currentQuestionIndex < count) {
-    // } else {
-    //   client.emit('sessionEnd', {
-    //     success: true,
-    //     data: {
-    //       text: "That's all! Thank you for your answers!",
-    //     },
-    //   });
-    // }
   }
 
   async handleNextQuestion(client: any, session: UserSession) {
     const nextQuestion = await this.questionService.findQuestionsByIndex(
       session.currentQuestionIndex,
     );
-
-    console.log('nextQuestion', nextQuestion);
 
     if (nextQuestion) {
       // check questions and update the index===1 replace with {name} with session.name
@@ -97,7 +84,6 @@ export class BotGateway
         data: nextQuestion,
       });
     } else {
-      console.log('No more questions');
       client.emit('sessionEnd', {
         success: true,
         data: {
@@ -144,8 +130,6 @@ export class BotGateway
         session.currentQuestionIndex,
       );
 
-      console.log('question', question);
-
       this.handleQuestion(client, session, question);
 
       session = await this.userSessionService.update(
@@ -156,8 +140,6 @@ export class BotGateway
       const nextQuestion = await this.questionService.findQuestionsByIndex(
         session.currentQuestionIndex + 1,
       );
-
-      console.log('next', nextQuestion);
 
       this.handleQuestion(client, session, nextQuestion);
 

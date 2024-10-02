@@ -131,7 +131,6 @@ export class UserSessionService {
         },
       ])
       .exec();
-    console.log(result);
     return result.length > 0 ? result[0] : null;
   }
 

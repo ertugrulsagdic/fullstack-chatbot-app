@@ -20,8 +20,7 @@
   max-height: 80vh;
   background-color: white;
   border-radius: 10px;
-  border-left: 1px solid #3333;
-  border-right: 1px solid #3333;
+  border: 1px solid #3333;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
@@ -33,7 +32,7 @@
   padding: 10px 20px;
   background-color: var(--primary-light);
   color: var(--text-color);
-  border: 0.5px solid #3333;
+  border-bottom: 0.5px solid #3333;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -222,6 +221,7 @@
 .chatbot-container.open .chatbot-window {
   animation: slideIn 0.3s forwards;
 }
+
 
 .chatbot-trigger {
   background-color: transparent;

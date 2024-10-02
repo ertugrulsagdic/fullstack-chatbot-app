@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useImperativeHandle, forwardRef } from "react";
 import "../styles/BoltChatBot.css";
 import { RobotIcon } from "../assets/icons/RobotIcon";
 import { CloseIcon } from "../assets/icons/CloseIcon";
 import { useWebSocket } from "../provider/WebSocketContext";
 
-const BoltChatBot = () => {
+const BoltChatBot = forwardRef((props, ref) => {
   const [isOpen, setIsOpen] = useState(true);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
@@ -15,9 +15,10 @@ const BoltChatBot = () => {
   const triggerButtonRef = useRef(null);
   const [queue, setQueue] = useState([]);
   const [isSessionEnd, setIsSessionEnd] = useState(false);
+  const inputRef = useRef(null);
+
 
   const queueBotMessage = (messageObject) => {
-    // if _id mathes in messages array, do not add to queue
     if (messages.find((msg) => msg._id === messageObject._id)) {
       return;
     }
@@ -31,6 +32,18 @@ const BoltChatBot = () => {
       addBotMessage(nextMessage);
     }
   }, [isTyping, queue]);
+
+  useImperativeHandle(ref, () => ({
+    isOpen,
+    openChat() {
+      setIsOpen(true);
+    },
+    focusInput() {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }
+  }));
 
   const {
     connectSocket,
@@ -116,25 +129,42 @@ const BoltChatBot = () => {
   }, [handleNextQestion]);
 
   useEffect(() => {
+    let animationFrameId;
+    
     if (!isOpen) {
       const button = triggerButtonRef.current;
       let angle = 0;
-      const radius = 20;
-      const centerX = window.innerWidth - 80;
-      const centerY = window.innerHeight - 80;
-
+      let radius = 20;
+      let padding = window.innerWidth < 768 ? 20 : 80; 
+      let centerX = window.innerWidth - padding;
+      let centerY = window.innerHeight - padding;
+  
+      const updatePosition = () => {
+        padding = window.innerWidth < 768 ? 20 : 80;
+        centerX = window.innerWidth - padding;
+        centerY = window.innerHeight - padding;
+      };
+  
       const animate = () => {
         angle += 0.01;
         const x = centerX + radius * Math.cos(angle);
         const y = centerY + radius * Math.sin(2 * angle);
         button.style.right = `${window.innerWidth - x}px`;
         button.style.bottom = `${window.innerHeight - y}px`;
-        requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
       };
-
+  
       animate();
+  
+      window.addEventListener('resize', updatePosition);
+  
+      return () => {
+        window.removeEventListener('resize', updatePosition);
+        cancelAnimationFrame(animationFrameId);
+      };
     }
   }, [isOpen]);
+  
 
   const addBotMessage = (messageObject) => {
     setIsTyping(true);
@@ -224,8 +254,6 @@ const BoltChatBot = () => {
           }
         );
       }
-
-      // addBotMessage({ text: 'deneme'});
     }
   };
 
@@ -281,6 +309,7 @@ const BoltChatBot = () => {
                 onChange={handleInputChange}
                 placeholder="Type anything..."
                 disabled={isTyping || isDisabled}
+                ref={inputRef}
               />
               <button type="submit" disabled={isTyping || isDisabled}>
                 Send
@@ -291,7 +320,7 @@ const BoltChatBot = () => {
       ) : (
         <button
           onClick={handleOpen}
-          className="chatbot-trigger initial-orb"
+          className="chatbot-trigger"
           ref={triggerButtonRef}
         >
           <div className="orb">
@@ -301,6 +330,6 @@ const BoltChatBot = () => {
       )}
     </div>
   );
-};
+});
 
 export default BoltChatBot;

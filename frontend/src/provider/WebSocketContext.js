@@ -31,29 +31,23 @@ export const WebSocketProvider = ({ children }) => {
     }
 
     const newSocket = io(wsUrl);
-
-      // Set the socket to state
       setSocket(newSocket);
 
       newSocket.on("connect", () => {
-        console.log("WebSocket connected:", wsUrl);
       });
 
       newSocket.on("session", (data) => {
         if (data) {
           localStorage.setItem("sessionId", data);
-          console.log("SessionId saved to localStorage:", data);
         }
       });
 
       newSocket.on("disconnect", () => {
-        console.log("WebSocket disconnected");
       });
 
       return () => {
         if (newSocket) {
-          console.log("Disconnecting WebSocket");
-          newSocket.disconnect(); // Properly close the connection
+          newSocket.disconnect();
         }
       };
   }, []);
@@ -62,16 +56,11 @@ export const WebSocketProvider = ({ children }) => {
   const updateName = useCallback(
     (name, handleSuccess, handleError) => {
       let sessionId = localStorage.getItem("sessionId");
-      console.log("Updating name:", name);
-      console.log("SessionId:", sessionId);
-      console.log("Socket:", socket);
 
       if (socket && sessionId && name) {
-        console.log("Name update emitted");
-        // socket.emit('updateName', { sessionId, name });
+
         socket.emit("updateName", { sessionId, name }, (response) => {
           if (response.success) {
-            console.log("Name update success:", response.data);
             handleSuccess(response.data);
           } else {
             console.error("Name update error:", response.data);
@@ -91,11 +80,8 @@ export const WebSocketProvider = ({ children }) => {
   const handleUserSession = useCallback(
     (handleSuccess, handleError) => {
       if (socket) {
-        console.log("User session emitted");
         socket.on("sessionData", (response) => {
-          console.log("SessionData:", response);
           if (response.success) {
-            console.log("User session success:", response.data);
             handleSuccess(response.data);
           } else {
             console.error("User session error:", response.data);
@@ -115,11 +101,8 @@ export const WebSocketProvider = ({ children }) => {
   const handleNextQestion = useCallback(
     (handleSuccess, handleError) => {
       if (socket) {
-        console.log("Next question emitted");
         socket.on("nextQuestion", (response) => {
-          console.log("Next question:", response);
           if (response.success) {
-            console.log("Next question success:", response.data);
             handleSuccess(response.data);
           } else {
             console.error("Next question error:", response.data);
@@ -141,7 +124,6 @@ export const WebSocketProvider = ({ children }) => {
       let sessionId = localStorage.getItem("sessionId");
       socket.emit("sendAnswer", { sessionId, answer }, (response) => {
         if (response.success) {
-          console.log("Answer success:", response.data);
           handleSuccess(response.data);
         } else {
           console.error("Answer error:", response.data);
@@ -156,9 +138,7 @@ export const WebSocketProvider = ({ children }) => {
     (handleSuccess, handleError) => {
       if (socket) {
         socket.on("sessionEnd", (response) => {
-          // console.log("Session end:", response);
           if (response.success) {
-            console.log("Session end success:", response.data);
             handleSuccess(response.data);
           } else {
             console.error("Session end error:", response.data);

@@ -84,7 +84,10 @@ export class UserSessionService {
                   text: {
                     $cond: {
                       if: {
-                        $eq: ['$index', 1],
+                        $and: [
+                          { $eq: ['$isDynamicallyGenerated', false] },
+                          { $eq: ['$index', 1] },
+                        ],
                       },
                       then: {
                         $replaceAll: {
